@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "title": "环境与架构设置",
+        "description": "使用uv初始化并管理项目的Python虚拟环境。搭建基于Agno框架的模块化项目结构，并定义清晰的目录和文件组织规范。",
+        "dependencies": [],
+        "priority": "high",
+        "status": "done"
+    },
+    {
+        "id": 2,
+        "title": "智能体核心（Agent Core）",
+        "description": "设计并实现一个智能体基类，定义通用接口（如`execute_task`, `communicate`）。开发不同角色的智能体（例如：大纲智能体、章节智能体、角色智能体、润色智能体）。实现智能体管理与调度中心，负责任务分配和工作流程控制。",
+        "dependencies": [1],
+        "priority": "high",
+        "status": "done"
+    },
+    {
+        "id": 3,
+        "title": "故事引擎（Story Engine）",
+        "description": "开发故事元素模块，用于管理和生成小说的核心要素（世界观、角色、情节线）。建立一个动态的“故事状态”管理器，跟踪小说的实时进展。实现一个协作协议，使智能体能够共享信息、传递上下文并解决创作冲突。",
+        "dependencies": [2],
+        "priority": "high",
+        "status": "done"
+    },
+    {
+        "id": 4,
+        "title": "工作流与协作（Workflow & Collaboration）",
+        "description": "设计一个从“灵感”到“最终章节”的完整创作工作流。实现一个任务队列系统，用于智能体之间的任务分发。建立智能体间的通信机制，允许它们交换意见和创作素材。",
+        "dependencies": [2, 3],
+        "priority": "medium",
+        "status": "done"
+    },
+    {
+        "id": 5,
+        "title": "数据持久化（Persistence）",
+        "description": "将生成的小说内容（章节、角色设定等）保存到文件或数据库中。实现项目状态的保存与加载功能，允许中断和恢复创作过程。",
+        "dependencies": [4],
+        "priority": "medium",
+        "status": "done"
+    },
+    {
+        "id": 6,
+        "title": "用户交互界面（UI）",
+        "description": "开发一个命令行界面（CLI），允许用户启动项目、输入初始创意、监控创作过程并查看结果。",
+        "dependencies": [5],
+        "priority": "low",
+        "status": "done"
+    }
+]
