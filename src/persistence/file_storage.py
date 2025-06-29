@@ -1,5 +1,6 @@
 # src/persistence/file_storage.py
 
+import os
 import json
 from typing import Dict, Any
 
@@ -7,7 +8,6 @@ class FileStorage:
     def __init__(self, base_path: str = "./data"):
         self.base_path = base_path
         # 确保数据存储目录存在
-        import os
         os.makedirs(self.base_path, exist_ok=True)
 
     def save_data(self, filename: str, data: Dict[str, Any]):

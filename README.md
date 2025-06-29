@@ -1,87 +1,170 @@
-# Multi-Agent Novel Creator
+[中文版本](README_zh.md)
 
-## Project Overview
+# Multi-Agent Web Novel Creation System
 
-The Multi-Agent Novel Creator is an innovative project designed to leverage the power of multiple AI agents to collaboratively generate and write novels. This system orchestrates various specialized agents, each contributing to different aspects of the storytelling process, from outlining and character development to chapter generation and plot progression.
+This is an innovative multi-agent web novel creation system designed to automate the generation of high-quality novel content by simulating the collaborative approach of a human creative team. The system starts with a simple user prompt, and through the division of labor and collaboration among agents, it gradually completes the construction of the novel outline, the writing of chapter content, and supports the persistence of the creative process.
 
-## Main Purpose
+## ✨ Features
 
-The primary goal of this project is to automate and enhance the creative writing process by:
--   **Collaborative Storytelling:** Enabling different AI agents to work together, simulating a team of writers.
--   **Structured Novel Generation:** Providing a framework for generating novels chapter by chapter, ensuring coherence and continuity.
--   **Modular Design:** Allowing for easy integration of new agent types and workflow enhancements.
--   **State Management:** Persisting the novel's progress and state, allowing for iterative development and recovery.
+*   **Automated Content Creation**: Decompose the complex novel creation process into manageable tasks, which are then collaboratively completed by different AI agents.
+*   **Improved Creation Efficiency**: Significantly reduce the time and effort required for manual creation, enabling rapid prototyping and content iteration.
+*   **Modular and Extensible Architecture**: Adopt a clear modular design, facilitating the introduction of new agents, integration of different LLM services, or expansion of new creative stages.
+*   **State Management and Recovery**: Ensure the continuity of the creative process, allowing users to save, load, and resume creative progress at any time.
 
-## Features
+## 🚀 Getting Started
 
-*   **Modular Agent System:** Specialized agents for different creative tasks (e.g., outlining, chapter writing).
-*   **Collaborative Protocol:** Agents communicate and collaborate to build the story.
-*   **Persistent Story State:** The novel's progress is saved and managed, allowing for seamless continuation.
-*   **Configurable Workflow:** Define and manage the creative process through a structured workflow.
-*   **Extensible Architecture:** Easily add new agents, story elements, or workflow steps.
+### 🛠️ Environment Setup and Dependency Management (Using `uv`)
 
-## Project Architecture
+This project recommends using `uv` for virtual environment management and dependency installation to ensure environment isolation and efficiency.
 
-The project is structured to promote modularity and clear separation of concerns:
-
-```
-multi-agent-novel-creator/
-├───.taskmaster/             # Task management and project configuration
-├───data/                    # Stores persistent data, e.g., story_state.json
-├───src/
-│   ├───agent_manager.py     # Manages the lifecycle and interaction of AI agents
-│   ├───main.py              # Main entry point for the application
-│   ├───agents/              # Contains definitions for various AI agents
-│   │   ├───base_agent.py    # Base class for all agents
-│   │   ├───chapter_agent.py # Agent responsible for writing chapters
-│   │   └───outline_agent.py # Agent responsible for generating story outlines
-│   ├───persistence/         # Handles data storage and retrieval
-│   │   └───file_storage.py  # Manages reading from and writing to files
-│   ├───story/               # Core logic for story creation and management
-│   │   ├───collaboration_protocol.py # Defines how agents interact and share information
-│   │   ├───story_elements.py         # Defines data structures for story components (characters, plot points, etc.)
-│   │   └───story_state_manager.py    # Manages the overall state and progression of the novel
-│   └───workflow/            # Defines the creative process and task execution
-│       ├───creative_workflow.py      # Orchestrates the sequence of creative tasks
-│       └───task_queue.py             # Manages tasks for agents to process
-└───pyproject.toml           # Project dependencies and metadata (managed by uv)
-```
-
-## Getting Started
-
-### Prerequisites
-
-*   Python 3.9+
-*   **`uv`**: A fast Python package installer and resolver. It is highly recommended for managing this project's dependencies due to its speed and efficiency. You can install it via `pip install uv`.
-
-### Installation
-
-1.  **Clone the repository:**
+1.  **Clone the Repository** (if you haven't already):
     ```bash
-    git clone https://github.com/your-username/multi-agent-novel-creator.git
+    git clone https://github.com/xyz-liu15/multi-agent-novel-creator.git
     cd multi-agent-novel-creator
     ```
 
-2.  **Install dependencies using `uv`:**
+2.  **Create and Activate Virtual Environment** (using `uv`):
     ```bash
-    uv sync
+    uv venv
+    source .venv/bin/activate  # macOS/Linux
+    # .venv\\Scripts\\activate   # Windows
     ```
-    This command will create a virtual environment and install all necessary dependencies as defined in `pyproject.toml`.
 
-### Usage
+3.  **Install Dependencies** (using `uv add`):
+    The core dependencies of this project include `typer` and `rich`. Agents may also depend on other libraries, such as those for LLM interaction.
+    ```bash
+    uv add typer rich
+    # If your LLM provider requires specific Python libraries, e.g., DeepSeek, you might also need to install:
+    # uv add deepseek-python # Assuming DeepSeek provides an official Python SDK
+    ```
+    **Note**: Please install the appropriate Python packages based on the LLM provider you are using and its SDK requirements.
 
-To start generating a novel, run the main application script using `uv`:
+### 🔑 API Configuration (Example: DeepSeek)
 
-```bash
-uv run python src/main.py
-```
+This project manages LLM API keys and model settings through environment variables and the `.taskmaster/config.json` file.
 
-This command ensures that the project is run within the virtual environment managed by `uv`. The application will then guide you through the novel creation process, leveraging the configured AI agents. The novel's progress, including generated outlines, characters, and chapter content, is persistently saved in `data/story_state.json`. This file is updated throughout the process to reflect the ongoing progress of the novel. You can inspect the current state of the novel at any time by viewing this JSON file, or by running the `uv run python src/main.py status` command for a summarized overview.
+1.  **Set DeepSeek API Key Environment Variable**:
+    You need to set your DeepSeek API key as an environment variable named `DEEPSEEK_API_KEY`.
+    *   **Linux/macOS**:
+        ```bash
+        export DEEPSEEK_API_KEY="YourDeepSeekAPIKey"
+        ```
+        To persist it, add it to your shell configuration file (e.g., `~/.bashrc`, `~/.zshrc`).
+    *   **Windows**:
+        Set via system environment variables, or temporarily in the command line.
 
-## Contributing
+2.  **Modify `.taskmaster/config.json` File**:
+    Open the `.taskmaster/config.json` file in the project root. You need to modify the `provider` and `modelId` in the `models.main` section to the corresponding DeepSeek configuration.
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+    Find the following section:
+    ```json
+    "main": {
+      "provider": "anthropic",
+      "modelId": "claude-3-7-sonnet-20250219",
+      "maxTokens": 120000,
+      "temperature": 0.2
+    }
+    ```
+    Modify it to (please adjust according to DeepSeek's actual model name, `deepseek-chat` is a common example):
+    ```json
+    "main": {
+      "provider": "deepseek",
+      "modelId": "deepseek-chat",
+      "maxTokens": 120000,
+      "temperature": 0.2
+    }
+    ```
+    Parameters like `maxTokens` and `temperature` can be adjusted according to DeepSeek model characteristics and your needs.
 
-## License
+## 📖 Usage
 
-[Specify your license here, e.g., MIT, Apache 2.0, etc.]
+All commands are executed from the project root directory, and **it is crucial to use the Python interpreter from the virtual environment**.
+
+1.  **Start Novel Creation**:
+    Use the `start` command and provide an initial prompt to begin creation.
+    ```bash
+    /home/athanx/multi-agent-novel-creator/.venv/bin/python -m src.main start "A story about a cyberpunk detective who finds himself trapped in a virtual reality."
+    ```
+    This will initiate the multi-agent workflow, including outline generation and chapter creation. The creation process may take some time, depending on the complexity of the prompt and the LLM's response speed.
+
+2.  **View Creation Status**:
+    Use the `status` command to view the current novel's creation progress and overview.
+    ```bash
+    /home/athanx/multi-agent-novel-creator/.venv/bin/python -m src.main status
+    ```
+    This will display information such as the generated outline, number of chapters created, total chapters, and current status.
+
+3.  **Save Current Creation State**:
+    You can manually save the current state at any time during the creation process.
+    ```bash
+    /home/athanx/multi-agent-novel-creator/.venv/bin/python -m src.main save
+    ```
+    This will persist the current novel state to the `./data` directory.
+
+4.  **Load Previously Saved State**:
+    If you interrupted creation, or want to continue from a previous checkpoint, you can use the `load` command.
+    ```bash
+    /home/athanx/multi-agent-novel-creator/.venv/bin/python -m src.main load
+    ```
+    This will load the latest saved state from the `./data` directory.
+
+## 🏗️ Project Architecture
+
+This project adopts a layered and modular design, mainly composed of the following core components:
+
+### 1. **Core Workflow (`src/workflow/creative_workflow.py`)**
+This is the "brain" of the entire system, responsible for orchestrating and driving various stages of novel creation.
+*   **`CreativeWorkflow` Class**:
+    *   Receives initial creative prompts.
+    *   Coordinates the work of `OutlineAgent` and `ChapterAgent`.
+    *   Manages `StoryStateManager` to track and update the overall progress and content of novel creation.
+    *   Defines clear creative steps (e.g., Outline Generation -> Chapter Generation).
+    *   Automatically saves the current state at the end of the workflow.
+
+### 2. **Agent Management (`src/agent_manager.py`)**
+Responsible for agent registration, lookup, and task dispatch.
+*   **`AgentManager` Class**:
+    *   Maintains a dictionary of agent instances (currently including `OutlineAgent` and `ChapterAgent`).
+    *   Provides a `get_agent` method, allowing the workflow to retrieve specific agent instances by name.
+    *   Provides a `dispatch_task` method to delegate specific tasks (e.g., generating outlines, writing chapters) to the corresponding agents for execution.
+
+### 3. **Agents (`src/agents/`)**
+Each agent plays a specific role in the novel creation process, focusing on completing tasks within its scope of responsibility.
+*   **`base_agent.py` (`BaseAgent`)**: Defines the base class for all agents, providing common interfaces and methods, such as `execute_task` and `communicate`.
+*   **`outline_agent.py` (`OutlineAgent`)**:
+    *   **Responsibilities**: Generates the overall outline of the novel based on the initial prompt, including title, synopsis, and a list of chapters (each chapter containing a title and summary).
+    *   **Collaboration**: Passes the generated outline to `CreativeWorkflow`, for subsequent chapter creation.
+*   **`chapter_agent.py` (`ChapterAgent`)**:
+    *   **Responsibilities**: Writes specific chapter content based on the title and summary of each chapter in the outline.
+    *   **Collaboration**: Returns the completed chapter content to `CreativeWorkflow`, which adds it to the overall content of the novel.
+
+### 4. **Persistence Layer (`src/persistence/file_storage.py`)**
+Responsible for storing and loading system state and generated content.
+*   **`FileStorage` Class**:
+    *   Provides `save_data` and `load_data` methods for serializing Python objects (e.g., novel state, outline, chapter content) into JSON format and saving them to the file system, or loading them from the file system.
+    *   By default, data is stored in the `./data` folder at the project root.
+
+### 5. **Story State Management (`src/story/story_state_manager.py`)**
+Centralizes the management of all novel-related data and creative progress.
+*   **`StoryStateManager` Class**:
+    *   Stores core elements of the novel (worldview, characters, plotlines).
+    *   Stores created chapter content.
+    *   Tracks overall creative progress (e.g., whether the outline is generated, number of chapters completed, total chapters).
+    *   Implements state saving and loading via `FileStorage`.
+
+### 6. **Command Line Interface (`src/main.py`)**
+The entry point for user interaction with the system.
+*   Built using the `typer` library, providing a user-friendly command-line interface.
+*   Defines commands suchs as `start`, `status`, `save`, `load`, making it convenient for users to initiate creation, query progress, and manage state.
+
+### 7. **Configuration (`.taskmaster/config.json`)**
+Contains global configurations for system runtime, especially LLM model selection and parameters.
+*   Allows users to configure different LLM models for `main`, `research`, `fallback`, etc., including provider, model ID, max tokens, and temperature.
+
+## 🤝 Contributing
+
+Contributions to this project are welcome! If you have any suggestions, bug reports, or feature requests, please submit them via [Issues](https://github.com/xyz-liu15/multi-agent-novel-creator/issues).
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
