@@ -7,8 +7,8 @@ from src.persistence import FileStorage
 from typing import Dict, Any
 
 class CreativeWorkflow:
-    def __init__(self, initial_prompt: str, storage: FileStorage):
-        self.agent_manager = AgentManager()
+    def __init__(self, initial_prompt: str, storage: FileStorage, llm):
+        self.agent_manager = AgentManager(llm)
         self.story_state_manager = StoryStateManager(storage)
         self.collaboration_protocol = CollaborationProtocol()
         self.task_queue = TaskQueue()
@@ -39,13 +39,35 @@ class CreativeWorkflow:
                         self.story_state_manager.update_progress("outline_generated", True)
                         self.story_state_manager.set_total_chapters(len(outline["chapters"]))
                         self.collaboration_protocol.share_information("OutlineAgent", "novel_outline", outline)
-                        print("[Workflow] Outline generated. Proceeding to Chapter Generation.")
+                        print("[Workflow] Outline generated.")
 
-                        # Step 2: Chapter Generation (add tasks to queue)
-                        print("\n[Workflow] Step 2: Chapter Generation")
+                        # Step 2: Character Generation
+                        print("\n[Workflow] Step 2: Character Generation")
+                        character_task = {"name": "Generate Novel Characters", "prompt": self.initial_prompt, "outline": outline}
+                        self.task_queue.add_task({"agent": "character_agent", "task": character_task})
+
+                        print("[Workflow] Proceeding to Character Generation.")
+
+                        # Step 3: Chapter Generation (add tasks to queue)
+                        print("\n[Workflow] Step 3: Chapter Generation")
                         for i, chapter_info in enumerate(outline["chapters"]):
                             chapter_task = {"name": f"Write Chapter {i+1}", "description": f"创作章节: {chapter_info['title']}", "chapter_info": chapter_info}
                             self.task_queue.add_task({"agent": "chapter_agent", "task": chapter_task})
+
+                    elif agent_name == "character_agent":
+                        characters = result["result"]
+                        self.story_state_manager.update_elements({"characters": characters})
+                        print(f"[Workflow] Generated {len(characters)} characters. Proceeding to Chapter Generation.")
+
+                        # Now, re-add chapter generation tasks, potentially with character context
+                        outline = self.collaboration_protocol.get_information("novel_outline")
+                        if outline:
+                            print("\n[Workflow] Resuming Chapter Generation with Character Context")
+                            for i, chapter_info in enumerate(outline["chapters"]):
+                                chapter_task = {"name": f"Write Chapter {i+1}", "description": f"创作章节: {chapter_info['title']}", "chapter_info": chapter_info, "characters": characters}
+                                self.task_queue.add_task({"agent": "chapter_agent", "task": chapter_task})
+                        else:
+                            print("[Workflow] Error: Outline not found for chapter generation after character generation.")
 
                     elif agent_name == "chapter_agent":
                         chapter_content = result["result"]

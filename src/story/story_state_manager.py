@@ -24,7 +24,12 @@ class StoryStateManager:
             # Assuming new_elements['world'] is a dict that can be used to create a World object
             pass # Implement actual parsing and updating
         if "characters" in new_elements:
-            pass # Implement actual parsing and updating
+            for char_data in new_elements["characters"]:
+                try:
+                    character = Character(**char_data)
+                    self.current_story_elements.add_character(character)
+                except TypeError as e:
+                    print(f"Error creating Character object from data: {char_data} - {e}")
         if "plotlines" in new_elements:
             pass # Implement actual parsing and updating
 
@@ -59,7 +64,14 @@ class StoryStateManager:
             if loaded_state.get("story_elements") and loaded_state["story_elements"].get("world"):
                 world_data = loaded_state["story_elements"]["world"]
                 self.current_story_elements.add_world(World(world_data["name"], world_data["description"], world_data["rules"]))
-            # ... similarly for characters and plotlines
+            if loaded_state.get("story_elements") and loaded_state["story_elements"].get("characters"):
+                for char_name, char_data in loaded_state["story_elements"]["characters"].items():
+                    try:
+                        character = Character(**char_data)
+                        self.current_story_elements.add_character(character)
+                    except TypeError as e:
+                        print(f"Error reconstructing Character object from loaded data: {char_data} - {e}")
+            # ... similarly for plotlines
 
             self.chapters_content = loaded_state.get("chapters_content", {})
             self.current_chapter_index = loaded_state.get("current_chapter_index", 0)

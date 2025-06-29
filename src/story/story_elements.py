@@ -16,18 +16,20 @@ class World:
         }
 
 class Character:
-    def __init__(self, name: str, description: str, personality: List[str], backstory: str):
+    def __init__(self, name: str, personality: List[str], background: str, role: str, unique_traits: str):
         self.name = name
-        self.description = description
         self.personality = personality
-        self.backstory = backstory
+        self.background = background
+        self.role = role
+        self.unique_traits = unique_traits
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
-            "description": self.description,
             "personality": self.personality,
-            "backstory": self.backstory
+            "background": self.background,
+            "role": self.role,
+            "unique_traits": self.unique_traits
         }
 
 class Plotline:

@@ -1,25 +1,53 @@
 # src/agents/outline_agent.py
 
+import json
 from .base_agent import BaseAgent
 
 class OutlineAgent(BaseAgent):
-    def __init__(self, name="OutlineAgent"):
-        super().__init__(name)
+    def __init__(self, llm, name="OutlineAgent"):
+        super().__init__(name, llm)
 
     def execute_task(self, task: dict) -> dict:
         print(f"{self.name} is executing task: {task['description']}")
-        # 模拟生成小说大纲的逻辑
-        outline = {
-            "title": "赛博朋克侦探",
-            "logline": "在一个反乌托邦的未来，一名侦探揭露了一场涉及人工智能和企业阴谋的巨大阴谋。",
+        prompt = task.get("description", "")
+
+        outline_generation_prompt = f"""
+        You are a professional novelist and outline creator. Based on the following prompt, generate a detailed novel outline.
+        The outline should include:
+        - A compelling title for the novel.
+        - A concise logline (1-2 sentences).
+        - A list of 3-5 chapters, where each chapter has:
+            - A chapter title.
+            - A brief summary of the chapter's content.
+
+        Ensure the outline is coherent, engaging, and sets up a compelling narrative arc.
+
+        Prompt: {prompt}
+
+        Generate the outline in JSON format, like this:
+        {{
+            "title": "Novel Title",
+            "logline": "A concise logline.",
             "chapters": [
-                {"title": "第一章：霓虹之影", "summary": "介绍主角和赛博朋克世界。"},
-                {"title": "第二章：数据迷宫", "summary": "侦探开始调查案件。"},
-                {"title": "第三章：真相边缘", "summary": "揭露部分阴谋。"}
+                {{"title": "Chapter 1 Title", "summary": "Chapter 1 Summary."}},
+                {{"title": "Chapter 2 Title", "summary": "Chapter 2 Summary."}}
             ]
-        }
-        print(f"{self.name} generated outline: {outline['title']}")
-        return {"status": "completed", "result": outline}
+        }}
+        """
+
+        print(f"{self.name}: Generating outline for: {prompt[:50]}...")
+        response = self.llm.generate_text(outline_generation_prompt)
+
+        try:
+            # Remove markdown code block if present
+            if response.startswith('```json') and response.endswith('```'):
+                response = response[len('```json'):-len('```')].strip()
+            outline = json.loads(response)
+            print(f"{self.name} generated outline: {outline.get('title', 'N/A')}")
+            return {"status": "completed", "result": outline}
+        except json.JSONDecodeError:
+            print(f"{self.name}: Failed to decode JSON response for outline: {response}")
+            return {"status": "failed", "message": "Failed to generate valid JSON outline."}
 
     def communicate(self, message: dict) -> dict:
         print(f"{self.name} received message: {message['content']}")

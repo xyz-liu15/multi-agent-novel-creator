@@ -6,7 +6,7 @@ This is an innovative multi-agent web novel creation system designed to automate
 
 ## ✨ Features
 
-*   **Automated Content Creation**: Decompose the complex novel creation process into manageable tasks, which are then collaboratively completed by different AI agents.
+*   **Automated Content Creation**: Decompose the complex novel creation process into manageable tasks, which are then collaboratively completed by different AI agents, resulting in plot-coherent, engaging, and character-driven novel chapters.
 *   **Improved Creation Efficiency**: Significantly reduce the time and effort required for manual creation, enabling rapid prototyping and content iteration.
 *   **Modular and Extensible Architecture**: Adopt a clear modular design, facilitating the introduction of new agents, integration of different LLM services, or expansion of new creative stages.
 *   **State Management and Recovery**: Ensure the continuity of the creative process, allowing users to save, load, and resume creative progress at any time.
@@ -108,6 +108,13 @@ All commands are executed from the project root directory, and **it is crucial t
     ```
     This will load the latest saved state from the `./data` directory.
 
+5.  **Export Novel to a File**:
+    After chapters are generated, you can export the complete novel content to a single text file.
+    ```bash
+    /home/athanx/multi-agent-novel-creator/.venv/bin/python -m src.main export [output_filename.txt]
+    ```
+    The `output_filename.txt` is optional; if not provided, it defaults to `novel_output.txt`. The file will be saved in the `./data` directory.
+
 ## 🏗️ Project Architecture
 
 This project adopts a layered and modular design, mainly composed of the following core components:
@@ -134,8 +141,11 @@ Each agent plays a specific role in the novel creation process, focusing on comp
 *   **`outline_agent.py` (`OutlineAgent`)**:
     *   **Responsibilities**: Generates the overall outline of the novel based on the initial prompt, including title, synopsis, and a list of chapters (each chapter containing a title and summary).
     *   **Collaboration**: Passes the generated outline to `CreativeWorkflow`, for subsequent chapter creation.
+*   **`character_agent.py` (`CharacterAgent`)**:
+    *   **Responsibilities**: Generates detailed character profiles (name, personality, background, role, unique traits) based on the story prompt and outline.
+    *   **Collaboration**: Provides character data to `CreativeWorkflow` and `StoryStateManager` for consistency across chapters.
 *   **`chapter_agent.py` (`ChapterAgent`)**:
-    *   **Responsibilities**: Writes specific chapter content based on the title and summary of each chapter in the outline.
+    *   **Responsibilities**: Writes specific chapter content based on the title and summary of each chapter in the outline, now also leveraging generated character information.
     *   **Collaboration**: Returns the completed chapter content to `CreativeWorkflow`, which adds it to the overall content of the novel.
 
 ### 4. **Persistence Layer (`src/persistence/file_storage.py`)**

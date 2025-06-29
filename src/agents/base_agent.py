@@ -3,8 +3,9 @@
 from abc import ABC, abstractmethod
 
 class BaseAgent(ABC):
-    def __init__(self, name: str):
+    def __init__(self, name: str, llm):
         self.name = name
+        self.llm = llm
 
     @abstractmethod
     def execute_task(self, task: dict) -> dict:

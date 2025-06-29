@@ -1,12 +1,13 @@
 # src/agent_manager.py
 
-from src.agents import BaseAgent, OutlineAgent, ChapterAgent
+from src.agents import BaseAgent, OutlineAgent, ChapterAgent, CharacterAgent
 
 class AgentManager:
-    def __init__(self):
+    def __init__(self, llm):
         self.agents = {
-            "outline_agent": OutlineAgent(),
-            "chapter_agent": ChapterAgent()
+            "outline_agent": OutlineAgent(llm=llm),
+            "chapter_agent": ChapterAgent(llm=llm),
+            "character_agent": CharacterAgent(llm=llm)
         }
 
     def get_agent(self, agent_name: str) -> BaseAgent:
