@@ -1,5 +1,6 @@
 # src/agents/chapter_agent.py
 
+import logging
 from .base_agent import BaseAgent
 
 class ChapterAgent(BaseAgent):
@@ -7,7 +8,7 @@ class ChapterAgent(BaseAgent):
         super().__init__(name, llm)
 
     def execute_task(self, task: dict) -> dict:
-        print(f"{self.name} is executing task: {task['description']}")
+        logging.info(f"{self.name} is executing task: {task['description']}")
         chapter_info = task.get("chapter_info", {})
         characters = task.get("characters", [])
 
@@ -38,17 +39,17 @@ class ChapterAgent(BaseAgent):
         Begin writing the chapter now.
         """
 
-        print(f"{self.name}: Generating content for chapter: {chapter_title}")
+        logging.info(f"{self.name}: Generating content for chapter: {chapter_title}")
         chapter_content = self.llm.generate_text(prompt)
 
         if chapter_content:
-            print(f"{self.name} generated chapter: {chapter_title}")
+            logging.info(f"{self.name} generated chapter: {chapter_title}")
             return {"status": "completed", "result": chapter_content}
         else:
-            print(f"{self.name} failed to generate content for chapter: {chapter_title}")
+            logging.error(f"{self.name} failed to generate content for chapter: {chapter_title}")
             return {"status": "failed", "message": "Failed to generate chapter content."}
 
     def communicate(self, message: dict) -> dict:
-        print(f"{self.name} received message: {message['content']}")
+        logging.info(f"{self.name} received message: {message['content']}")
         return {"status": "acknowledged", "response": "收到章节创作请求。"}
 

@@ -1,5 +1,6 @@
 # src/agents/outline_agent.py
 
+import logging
 import json
 from .base_agent import BaseAgent
 
@@ -8,7 +9,7 @@ class OutlineAgent(BaseAgent):
         super().__init__(name, llm)
 
     def execute_task(self, task: dict) -> dict:
-        print(f"{self.name} is executing task: {task['description']}")
+        logging.info(f"{self.name} is executing task: {task['description']}")
         prompt = task.get("description", "")
 
         outline_generation_prompt = f"""
@@ -35,7 +36,7 @@ class OutlineAgent(BaseAgent):
         }}
         """
 
-        print(f"{self.name}: Generating outline for: {prompt[:50]}...")
+        logging.info(f"{self.name}: Generating outline for: {prompt[:50]}...")
         response = self.llm.generate_text(outline_generation_prompt)
 
         try:
@@ -43,12 +44,12 @@ class OutlineAgent(BaseAgent):
             if response.startswith('```json') and response.endswith('```'):
                 response = response[len('```json'):-len('```')].strip()
             outline = json.loads(response)
-            print(f"{self.name} generated outline: {outline.get('title', 'N/A')}")
+            logging.info(f"{self.name} generated outline: {outline.get('title', 'N/A')}")
             return {"status": "completed", "result": outline}
         except json.JSONDecodeError:
-            print(f"{self.name}: Failed to decode JSON response for outline: {response}")
+            logging.error(f"{self.name}: Failed to decode JSON response for outline: {response}")
             return {"status": "failed", "message": "Failed to generate valid JSON outline."}
 
     def communicate(self, message: dict) -> dict:
-        print(f"{self.name} received message: {message['content']}")
+        logging.info(f"{self.name} received message: {message['content']}")
         return {"status": "acknowledged", "response": "收到大纲请求。"}

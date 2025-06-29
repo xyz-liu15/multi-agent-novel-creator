@@ -2,6 +2,7 @@
 
 import os
 import json
+import logging
 from typing import Dict, Any
 
 class FileStorage:
@@ -15,7 +16,7 @@ class FileStorage:
         filepath = os.path.join(self.base_path, filename)
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        print(f"[Persistence] Data saved to {filepath}")
+        logging.info(f"[Persistence] Data saved to {filepath}")
 
     def load_data(self, filename: str) -> Dict[str, Any] or None:
         """从JSON文件加载数据。"""
@@ -23,7 +24,7 @@ class FileStorage:
         if os.path.exists(filepath):
             with open(filepath, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            print(f"[Persistence] Data loaded from {filepath}")
+            logging.info(f"[Persistence] Data loaded from {filepath}")
             return data
-        print(f"[Persistence] File not found: {filepath}")
+        logging.warning(f"[Persistence] File not found: {filepath}")
         return None

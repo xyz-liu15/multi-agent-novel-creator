@@ -1,8 +1,9 @@
 # src/story/story_state_manager.py
 
 from typing import Dict, Any
-from .story_elements import StoryElements
+from .story_elements import StoryElements, World, Character
 from src.persistence import FileStorage
+import logging
 
 class StoryStateManager:
     def __init__(self, storage: FileStorage):
@@ -29,7 +30,7 @@ class StoryStateManager:
                     character = Character(**char_data)
                     self.current_story_elements.add_character(character)
                 except TypeError as e:
-                    print(f"Error creating Character object from data: {char_data} - {e}")
+                    logging.error(f"Error creating Character object from data: {char_data} - {e}")
         if "plotlines" in new_elements:
             pass # Implement actual parsing and updating
 
@@ -70,12 +71,12 @@ class StoryStateManager:
                         character = Character(**char_data)
                         self.current_story_elements.add_character(character)
                     except TypeError as e:
-                        print(f"Error reconstructing Character object from loaded data: {char_data} - {e}")
+                        logging.error(f"Error reconstructing Character object from loaded data: {char_data} - {e}")
             # ... similarly for plotlines
 
             self.chapters_content = loaded_state.get("chapters_content", {})
             self.current_chapter_index = loaded_state.get("current_chapter_index", 0)
             self.overall_progress = loaded_state.get("overall_progress", {})
-            print("[Persistence] Story state loaded.")
+            logging.info("[Persistence] Story state loaded.")
         else:
-            print("[Persistence] No saved state found to load.")
+            logging.warning("[Persistence] No saved state found to load.")

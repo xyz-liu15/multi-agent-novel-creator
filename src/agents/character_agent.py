@@ -1,3 +1,4 @@
+import logging
 from src.agents.base_agent import BaseAgent
 from src.story.story_elements import Character
 from typing import List, Dict, Any
@@ -51,21 +52,21 @@ class CharacterAgent(BaseAgent):
         ]
         """
 
-        print(f"CharacterAgent: Generating characters for prompt: {prompt[:50]}...")
+        logging.info(f"CharacterAgent: Generating characters for prompt: {prompt[:50]}...")
         response = self.llm.generate_text(character_generation_prompt)
         
         try:
             characters_data = json.loads(response)
             characters = [Character(**data) for data in characters_data]
-            print(f"CharacterAgent: Generated {len(characters)} characters.")
+            logging.info(f"CharacterAgent: Generated {len(characters)} characters.")
             return {"status": "completed", "result": characters}
         except json.JSONDecodeError:
-            print(f"CharacterAgent: Failed to decode JSON response for characters: {response}")
+            logging.error(f"CharacterAgent: Failed to decode JSON response for characters: {response}")
             return {"status": "failed", "message": f"Failed to decode JSON response for characters: {response}"}
         except TypeError as e:
-            print(f"CharacterAgent: Type error when creating Character objects: {e} - Response: {response}")
+            logging.error(f"CharacterAgent: Type error when creating Character objects: {e} - Response: {response}")
             return {"status": "failed", "message": f"Type error when creating Character objects: {e} - Response: {response}"}
 
     def communicate(self, message: dict) -> dict:
-        print(f"{self.name} received message: {message['content']}")
+        logging.info(f"{self.name} received message: {message['content']}")
         return {"status": "acknowledged", "response": "收到角色信息。"}
